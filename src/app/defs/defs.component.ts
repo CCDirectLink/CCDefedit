@@ -97,6 +97,28 @@ export class DefsComponent implements OnInit {
 
     var index = this.tableContent.indexOf(entry);
     this.tableContent.splice(index, 1);
+
+    var parent = this.getParent(<Dir>this.root, entry);
+
+    index = parent.members.indexOf(entry);
+    parent.members.splice(index, 1);
+  }
+
+  
+
+  private getParent(node: Dir, searched: Entry): Dir{
+    for(let entry of node.members){
+      if(entry.type === "member"){
+        if(entry === searched)
+          return node;
+      }else if(entry.type === "object"){
+        var result = this.getParent(<Dir>entry, searched);
+        if(result)
+          return result;
+      }
+    }
+
+    return undefined;
   }
 
   public create(entry: Dir): void{

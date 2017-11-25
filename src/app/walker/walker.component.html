@@ -1,8 +1,28 @@
-<div class="card">
+<div class="card" *ngIf="tree">
   <div class="card-header">
     Find definition
   </div>
   <div class="card-body">
-    test
+    <div class="form-group">
+      <label for="perNode">Per node</label>
+      <input type="number" id="perNode" class="form-control form-control-sm" placeholder="2" [(ngModel)]="perNode" [readOnly]="searching">
+    </div>
+    <div class="form-group">
+      <label for="steps">Steps</label>
+      <input type="number" id="steps" class="form-control form-control-sm" placeholder="10" [(ngModel)]="steps" [readOnly]="searching">
+    </div>
+    <div class="form-group">
+      <label for="depth">Depth</label>
+      <input type="number" id="depth" class="form-control form-control-sm" placeholder="20" [(ngModel)]="depth" [readOnly]="searching">
+    </div>
+    <div class="form-group">
+      <label for="pattern">Pattern</label>
+      <input type="text" id="pattern" class="form-control form-control-sm" [(ngModel)]="pattern" [readOnly]="searching">
+    </div>
+    <div class="form-group">
+      <label for="searched">Searched</label>
+      <input type="text" id="searched" class="form-control form-control-sm" [(ngModel)]="searched" [readOnly]="searching">
+    </div>
+    <button type="submit" class="btn btn-success btn-sm float-right" (click)="search()">Search</button>
   </div>
 </div>

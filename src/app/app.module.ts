@@ -10,6 +10,7 @@ import { MemberComponent } from './defs/member/member.component';
 import { LoaderService } from './loader.service';
 import { EditorComponent } from './editor/editor.component';
 import { WalkerComponent } from './walker/walker.component';
+import { WalkerService } from './walker/walker.service';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,7 @@ import { WalkerComponent } from './walker/walker.component';
     BrowserModule,
     FormsModule
   ],
-  providers: [LoaderService],
+  providers: [LoaderService, WalkerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

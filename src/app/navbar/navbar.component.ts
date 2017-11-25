@@ -25,4 +25,9 @@ export class NavbarComponent implements OnInit {
   public openCode(){
     this.loader.openCode();
   }
+
+  public save(){
+    if(this.saveEnabled)
+      this.loader.save();
+  }
 }

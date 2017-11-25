@@ -1,0 +1,70 @@
+<div class="card">
+  <div class="card-header">
+    Properties <a *ngIf="entry">{{getTitle()}}</a>
+  </div>
+  <div class="card-body"  *ngIf="entry">
+    <div class="form-group">
+      <label for="type">Type</label>
+      <select id="type" class="form-control form-control-sm" [(ngModel)]="entry.type">
+        <option>object</option>
+        <option>member</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" class="form-control form-control-sm" placeholder="Name" [(ngModel)]="entry.name">
+    </div>
+    <div class="form-group" *ngIf="entry.type === 'member'">
+      <label for="reftype">Reftype</label>
+      <select id="reftype" class="form-control form-control-sm" [(ngModel)]="entry.refType">
+        <option>var</option>
+        <option>raw</option>
+        <option>ref</option>
+      </select>
+    </div>
+    <div class="form-group" *ngIf="entry.refType === 'var' || entry.refType === 'ref'">
+      <label for="parent">Parent</label>
+      <input type="text" id="parent" class="form-control form-control-sm" placeholder="Parent" [(ngModel)]="entry.parent">
+    </div>
+
+    <div class="card" *ngIf="entry.type === 'member'">
+      <div class="card-header">
+        Compiled
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label for="ctype" class="col-form-label-sm">Type</label>
+          <select id="ctype" class="form-control form-control-sm" disabled>
+            <option selected>select</option>
+            <option>fixed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="pattern" class="col-form-label-sm">Pattern</label>
+          <input type="text" id="pattern" class="form-control form-control-sm" [(ngModel)]="entry.compiled.pattern">
+        </div>
+        <div class="form-group">
+          <label for="nodeType" class="col-form-label-sm">Node type</label>
+          <input type="text" id="nodeType" class="form-control form-control-sm" [(ngModel)]="entry.compiled.from.type">
+        </div>
+        <div class="form-group">
+          <label for="values" class="col-form-label-sm">Values</label>
+          <div id="values">
+            <div class="form-row row-padding" *ngFor="let kv of entry.compiled.from.values; let i = index">
+              <div class="col">
+                <input type="text" class="form-control form-control-sm" placeholder="Name" [(ngModel)]="kv.name">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control form-control-sm" placeholder="Value" [(ngModel)]="kv.value">
+              </div>
+              <div class="col-md-auto">
+                <input type="button" class="form-control btn btn-danger btn-sm" value="-" (click)="remove(i)">
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success btn-sm float-right" (click)="add()">+</button>
+      </div>
+    </div>
+  </div>
+</div>

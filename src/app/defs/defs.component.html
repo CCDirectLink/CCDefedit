@@ -1,0 +1,11 @@
+<div class="card">
+  <div class="card-header">
+    Definitions
+  </div>
+  <ul class="list-group list-group-flush">
+    <li *ngFor="let entry of tableContent" [class]="getClasses(entry)" (click)="click(entry)">
+      <app-dir *ngIf="entry.type === 'object'" [entry]="entry" (deleteEntry)="delete(entry)" (createEntry)="create(entry)"></app-dir>
+      <app-member *ngIf="entry.type === 'member'" [entry]="entry" (deleteEntry)="delete(entry)"></app-member>
+    </li>
+  </ul>
+</div>

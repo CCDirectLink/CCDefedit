@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Entry } from './entry.model';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,15 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  selected: Entry;
+  root: Entry;
+  saveEnabled: boolean = false;
+
+  public select(entry: Entry): void{
+    this.selected = entry;
+  }
+  public selectRoot(entry: Entry): void{
+    this.root = entry;
+    this.saveEnabled = true;
+  }
 }

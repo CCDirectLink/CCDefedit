@@ -12,6 +12,8 @@ import { LoaderService } from '../loader.service';
 export class DefsComponent implements OnInit {
   root: Entry;
   selected: Entry;
+  copyied: Entry;
+  deleteSource: boolean = false;
   tableContent: Entry[] = [];
 
   @Output() selectedEntry = new EventEmitter<Entry>();
@@ -22,6 +24,49 @@ export class DefsComponent implements OnInit {
   }
 
   ngOnInit() {
+    document.body.addEventListener("keydown", this.keyDown.bind(this), false);
+  }
+
+  public keyDown(e: KeyboardEvent){
+    e = e || <KeyboardEvent>window.event;
+    var key = e.which || e.keyCode; // keyCode detection
+    var ctrl = e.ctrlKey ? e.ctrlKey : ((key === 17) ? true : false); // ctrl detection
+    
+    if (key == 67 && ctrl) {
+      this.copyied = this.selected;
+      this.deleteSource = false;
+    } 
+    if (key == 88 && ctrl) {
+      this.copyied = this.selected;
+      this.deleteSource = true;
+    }else if (key == 86 && ctrl) {
+      var parent: Dir;
+
+      if(this.selected.type === 'object')
+        parent = <Dir>this.selected;
+      else
+        parent = this.getParent(<Dir>this.root, this.selected);
+
+      if(this.copyied.type === 'object'){
+        var co = <Dir>this.copyied;
+        if(co.expanded)
+          this.hide(co);
+      }
+
+      var copy: Entry = JSON.parse(JSON.stringify(this.copyied));
+
+      if(this.deleteSource){
+        this.delete(this.copyied);
+        this.copyied = copy;
+      }
+
+      if(parent.expanded)
+        this.hide(parent);
+
+      parent.members.push(copy);
+
+      this.expand(parent);
+    }
   }
 
   public displayDefintion(entry: Entry) : void{
@@ -61,7 +106,7 @@ export class DefsComponent implements OnInit {
           this.hide(<Dir>e);
       } else {
         if(e === this.selected)
-          this.select(e);
+          this.unselect();
       }
     }
 
@@ -83,17 +128,21 @@ export class DefsComponent implements OnInit {
   }
 
   private select(entry: Entry): void{
-    if(entry == this.selected)
-      this.selected = undefined;
-    else
-      this.selected = entry;
-    
+    this.selected = entry;
+    this.selectedEntry.emit(this.selected);
+  }
+
+  private unselect(): void{
+    this.selected = undefined;
     this.selectedEntry.emit(this.selected);
   }
 
   public delete(entry: Entry): void{
     if(entry.type === 'object')
       this.hide(<Dir>entry);
+
+    if(entry === this.selected)
+      this.unselect();
 
     var index = this.tableContent.indexOf(entry);
     this.tableContent.splice(index, 1);
@@ -108,10 +157,9 @@ export class DefsComponent implements OnInit {
 
   private getParent(node: Dir, searched: Entry): Dir{
     for(let entry of node.members){
-      if(entry.type === "member"){
-        if(entry === searched)
-          return node;
-      }else if(entry.type === "object"){
+      if(entry === searched)
+        return node;
+      else if(entry.type === "object"){
         var result = this.getParent(<Dir>entry, searched);
         if(result)
           return result;
@@ -126,6 +174,6 @@ export class DefsComponent implements OnInit {
 
     var index = entry.members.push(new Member('member', 'raw', '', '', {pattern: '', from:{type:'', values: []}}));
 
-    this.select(entry.members[index]);
+    this.select(entry.members[index - 1]);
   }
 }

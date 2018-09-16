@@ -10,19 +10,16 @@ export class DirComponent implements OnInit {
   @Input() entry: Entry;
   @Output() deleteEntry = new EventEmitter();
   @Output() createEntry = new EventEmitter();
-
   constructor() { }
 
   ngOnInit() {
   }
-  getText(): string{
-    return this.entry.name.padStart(this.entry.name.length + this.entry.layer * 2, "\u00A0");
+  update(): void {
   }
-  
-  delete(): void{
+  delete(): void {
     this.deleteEntry.emit();
   }
-  create(): void{
+  create(): void {
     this.createEntry.emit();
   }
 }

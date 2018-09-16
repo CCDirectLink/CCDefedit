@@ -9,12 +9,12 @@ import { Entry } from './entry.model';
 export class AppComponent {
   selected: Entry;
   root: Entry;
-  saveEnabled: boolean = false;
+  saveEnabled = false;
 
-  public select(entry: Entry): void{
+  public select(entry: Entry): void {
     this.selected = entry;
   }
-  public selectRoot(entry: Entry): void{
+  public selectRoot(entry: Entry): void {
     this.root = entry;
     this.saveEnabled = true;
   }

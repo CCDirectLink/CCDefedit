@@ -1,3 +1,7 @@
 .list-group-item {
     padding: 3px 10px
 }
+button {
+  float: left;
+  position: 50%;
+}

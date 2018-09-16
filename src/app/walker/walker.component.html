@@ -24,14 +24,17 @@
       <input type="text" id="searched" class="form-control form-control-sm" [(ngModel)]="searched" [readOnly]="searching">
     </div>
     <button type="submit" class="btn btn-success btn-sm float-right" (click)="search()">Search</button>
-    
+
     <div class="form-group"></div>
-    
+
     <div class="form-group" *ngIf="result">
-      <label for="result">Result</label>
-      <input type="text" id="result" class="form-control form-control-sm" [(ngModel)]="result.pattern" [readOnly]="searching">
-      <input type="text" class="form-control form-control-sm" [(ngModel)]="result.value" [readOnly]="searching">
-      <input type="text" class="form-control form-control-sm" [(ngModel)]="result.type" [readOnly]="searching">
+      <label>Result</label>
+      <label for="pattern">Pattern</label>
+      <input type="text" id="pattern" class="form-control form-control-sm" [(ngModel)]="result.pattern" [readOnly]="searching">
+      <label for="value">Pattern</label>
+      <input type="text" id="value" class="form-control form-control-sm" [(ngModel)]="result.value" [readOnly]="searching">
+      <label for="type">Type</label>
+      <input type="text" id="type" class="form-control form-control-sm" [(ngModel)]="result.type" [readOnly]="searching">
     </div>
   </div>
 </div>

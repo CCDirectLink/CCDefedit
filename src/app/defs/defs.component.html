@@ -3,9 +3,16 @@
     Definitions
   </div>
   <ul class="list-group list-group-flush">
-    <li *ngFor="let entry of tableContent" [class]="getClasses(entry)" (click)="click(entry)">
-      <app-dir *ngIf="entry.type === 'object'" [entry]="entry" (deleteEntry)="delete(entry)" (createEntry)="create(entry)"></app-dir>
-      <app-member *ngIf="entry.type === 'member'" [entry]="entry" (deleteEntry)="delete(entry)"></app-member>
+    <li *ngFor="let entry of tableContent" [class]="getClasses(entry)" (click)="entry.type === 'member' ? click(entry) : false">
+
+      <button *ngIf="entry.type === 'object'" class="float-left btn btn-sm btn-primary"
+              (click)="click(entry, $event);" textContent="{{entry.expanded === true ? 'v': '>'}}">></button>
+      <app-dir  *ngIf="entry.type === 'object'" [entry]="entry" (deleteEntry)="delete(entry);" (createEntry)="create(entry)"></app-dir>
+
+
+      <app-member *ngIf="entry.type === 'member'" (click)="click(entry)" [entry]="entry" (deleteEntry)="delete(entry)"></app-member>
+
+
     </li>
   </ul>
 </div>

@@ -9,17 +9,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class MemberComponent implements OnInit {
   @Input() entry: Member;
   @Output() deleteEntry = new EventEmitter();
-  
   constructor() { }
 
-  ngOnInit() {
-  }
-  
-  getText(): string{
-    return this.entry.name.padStart(this.entry.name.length + this.entry.layer * 2, "\u00A0");
-  }
-  
-  delete(): void{
+  ngOnInit() { }
+  delete(): void {
     this.deleteEntry.emit();
   }
 }

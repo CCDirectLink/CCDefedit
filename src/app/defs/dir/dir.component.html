@@ -1,4 +1,4 @@
-<a>{{getText()}}</a>
+<a textContent="{{entry.name.padStart(entry.name.length + entry.layer * 2, '\u00A0')}}"></a>
 
 <button class="float-right btn btn-sm btn-primary" (click)="delete()">-</button>
 <button class="float-right btn btn-sm btn-primary" (click)="create()">+</button>

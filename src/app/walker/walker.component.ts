@@ -35,10 +35,14 @@ export class WalkerComponent {
   }
   
   public search(){
+	this.result = null;
     this.searching = true;
+    var doSearch = async function() {
+		this.result = this.walker.search(this.tree, this.searched, this.pattern, this.depth, this.perNode, this.steps);
+		this.searching = false;
+	}.bind(this);
+    doSearch();
 
-    this.result = this.walker.search(this.tree, this.searched, this.pattern, this.depth, this.perNode, this.steps);
-
-    this.searching = false;
+    
   }
 }

@@ -8,7 +8,7 @@ import { LoaderService } from '../loader.service';
 })
 export class NavbarComponent implements OnInit {
   loader: LoaderService;
-  @Input() saveEnabled: boolean = false;
+  @Input() saveEnabled = false;
 
   constructor(loader: LoaderService) {
     this.loader = loader;
@@ -17,17 +17,20 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
   }
 
-
-  public openDefinition(){
+  public createDefinition() {
+    this.loader.createDefinition();
+  }
+  public openDefinition() {
     this.loader.openDefinition();
   }
 
-  public openCode(){
+  public openCode() {
     this.loader.openCode();
   }
 
-  public save(){
-    if(this.saveEnabled)
+  public save() {
+    if (this.saveEnabled) {
       this.loader.save();
+    }
   }
 }

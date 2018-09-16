@@ -5,14 +5,14 @@
   <div class="card-body"  *ngIf="entry">
     <div class="form-group">
       <label for="type">Type</label>
-      <select id="type" class="form-control form-control-sm" [(ngModel)]="entry.type">
+      <select id="type" [(ngModel)]="entry.type" class="form-control form-control-sm" (change)="onTypeChange($event)">
         <option>object</option>
         <option>member</option>
       </select>
     </div>
     <div class="form-group">
       <label for="name">Name</label>
-      <input type="text" id="name" class="form-control form-control-sm" placeholder="Name" [(ngModel)]="entry.name">
+      <input type="text" id="name" (change)="onNameChange($event)" class="form-control form-control-sm" placeholder="Name" [(ngModel)]="entry.name">
     </div>
     <div class="form-group" *ngIf="entry.type === 'member'">
       <label for="reftype">Reftype</label>

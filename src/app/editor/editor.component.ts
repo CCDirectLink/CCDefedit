@@ -1,3 +1,4 @@
+import { Leaf } from '../leaf.model';
 import { Dir } from '../dir.model';
 import { EventEmitter, Output, Component, OnInit, Input } from '@angular/core';
 import { Entry } from '../entry.model';
@@ -13,71 +14,78 @@ export class EditorComponent implements OnInit {
   @Input() root: Entry;
   @Output() nameChange = new EventEmitter();
   elementRef;
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
+
   }
   onNameChange(event) {
+    const value = this.entry.value;
+    value.name = event.target.value;
+    if (this.entry.type === 'member') {
+      value.leaf.name = value.name;
+    }
   }
   public onTypeChange(event): void {
     // remove all fields
+    const oldEntry = this.entry.value.clone();
 
-    const name = this.entry['name'];
-    const layer = this.entry['layer'];
-    for (const key of Object.keys(this.entry)) {
-      if (true) {
-        delete this.entry[key];
-      }
-    }
+    this.entry.value.clear();
+    delete this.entry.value;
 
     const type = this.entry.type = event.target.value;
-    this.entry['name'] = name || '';
-    this.entry['layer'] = layer || 0;
+    console.log(event);
     if (type === 'member') {
-      //
-      this.entry['compiled'] = {
-        pattern : '',
-        from : {
-          type : '',
-          values : []
-        }
+      const leaf = <Leaf> {
+        type : 'static',
+        name : oldEntry.name,
+        parent : ''
       };
-
+      this.entry.value = new Member(type,
+                                    oldEntry.name,
+                                    {type : '', values: []},
+                                    leaf);
+     console.log('Is member', this.entry.value);
     } else if (type === 'object') {
-      this.entry['members'] = [];
+      this.entry.value = new Dir(type,
+                                 oldEntry.name);
     }
+    oldEntry.clear();
   }
   public getTitle(): string {
-    return '(' + this.getPath(<Dir>this.root) + ')';
+    return '(' + this.getPath(this.root) + ')';
   }
 
-  private getPath(dir: Dir): string {
-    if (dir === this.entry) {
-      return dir.name;
+  private getPath(entry: Entry, current: string = ''): string {
+    if (current.length) {
+      current += '.' + entry.name;
+    } else {
+      current = entry.name;
     }
-
-    for (const entry of dir.members) {
-      if (entry.type === 'member') {
-        if (entry === this.entry) {
-          return dir.name + '.' + entry.name;
-        }
-
-      } else if (entry.type === 'object') {
-        const result = this.getPath(<Dir>entry);
-        if (result) {
-          return dir.name + '.' + result;
+    if (entry !== this.entry) {
+      const dir = entry.value;
+      for (const aEntry of dir.children) {
+        if (aEntry.type === 'member') {
+          if (aEntry === this.entry) {
+            return current + '.' + aEntry.name;
+          }
+        } else if (aEntry.type === 'object') {
+          const result = this.getPath(aEntry, current);
+          if (result) {
+            return result;
+          } else {
+            return current + '.' + aEntry.name;
+          }
         }
       }
-    }
-
-    return undefined;
+    return current;
   }
-
+}
   public remove(i: number): void {
-    (<Member>this.entry).compiled.from.values.splice(i, 1);
+    (<Member>this.entry.value).from.values.splice(i, 1);
   }
 
   public add(): void {
-    (<Member>this.entry).compiled.from.values.push({name: '', value: ''});
+    (<Member>this.entry.value).from.values.push({name: '', value: ''});
   }
 }

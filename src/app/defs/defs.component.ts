@@ -20,7 +20,7 @@ export class DefsComponent implements OnInit {
   @Output() selectedRoot = new EventEmitter<Entry>();
 
   constructor(loader: LoaderService) {
-    loader.definition.subscribe(this.displayDefintion.bind(this));
+    loader.definition.subscribe(this.displayDefinition.bind(this));
   }
 
   ngOnInit() {
@@ -41,17 +41,17 @@ export class DefsComponent implements OnInit {
         this.copyied = this.selected;
         this.deleteSource = true;
       } else if (key === 86) {
-        let parent: Dir;
+        let parent: Entry;
 
         if (this.selected.type === 'object') {
-          parent = <Dir>this.selected;
+          parent = this.selected;
         } else {
-          parent = this.getParent(<Dir>this.root, this.selected);
+          parent = this.getParent(this.root.value, this.selected);
         }
 
 
         if (this.copyied.type === 'object') {
-          const co = <Dir>this.copyied;
+          const co = this.copyied;
           if (co.expanded) {
             this.hide(co);
           }
@@ -70,7 +70,7 @@ export class DefsComponent implements OnInit {
         }
 
 
-        parent.members.push(copy);
+        parent.value.children.push(copy);
 
         this.expand(parent);
       }
@@ -78,35 +78,36 @@ export class DefsComponent implements OnInit {
 
   }
 
-  public displayDefintion(entry: Entry): void {
+  public displayDefinition(entry: Entry): void {
     this.root = entry;
-    this.addLayer(entry, 0);
+    this.addLayer(entry.value, 0);
     this.selectedRoot.emit(this.root);
     this.tableContent = [this.root];
   }
-  private addLayer(obj, layer: number) {
+  private addLayer(obj: Entry, layer: number) {
      if (!layer) {
        layer = 0;
      }
      if (!obj.layer) {
        obj['layer'] = layer;
      }
-     if (obj.members && obj.members.length) {
-       obj.members.forEach(function(element) {
+     const value = obj.value;
+     if (value && value.children && value.children.length) {
+       value.children.forEach(function(element) {
          this.addLayer(element, layer + 1);
        }.bind(this));
      }
   }
   public click(entry: Entry, event) {
     if (entry.type === 'object') {
-      this.toggle(<Dir>entry);
+      this.toggle(entry);
     }
 
 
     this.select(entry);
   }
 
-  private toggle(entry: Dir): void {
+  private toggle(entry: Entry): void {
     if (entry.expanded) {
       this.hide(entry);
     } else {
@@ -114,24 +115,23 @@ export class DefsComponent implements OnInit {
     }
   }
 
-  private expand(entry: Dir): void {
+  private expand(entry: Entry): void {
     const index = this.tableContent.indexOf(entry) + 1;
-    const members = entry.members;
+    const members = entry.value.children;
     for (let i = members.length - 1; i >= 0; i--) {
       members[i].layer = (entry.layer || 0) + 1;
       this.tableContent.splice(index, 0, members[i]);
     }
     entry.expanded = true;
   }
-  private hide(entry: Dir): void {
-    for (const e of entry.members) {
+  private hide(entry: Entry): void {
+    for (const e of entry.value.children) {
       if (e.type === 'object') {
-        if ((<Dir>e).expanded) {
-          this.hide(<Dir>e);
+        if (e.expanded) {
+          this.hide(e);
         }
       } else {
         if (e === this.selected) {
-          console.log(this.selected);
           this.unselect();
         }
       }
@@ -139,7 +139,7 @@ export class DefsComponent implements OnInit {
 
     const index = this.tableContent.indexOf(entry) + 1;
 
-    this.tableContent.splice(index, entry.members.length);
+    this.tableContent.splice(index, entry.value.children.length);
 
     entry.expanded = false;
   }
@@ -173,32 +173,31 @@ export class DefsComponent implements OnInit {
     }
 
     // if is a parent and expanded. Hide it
-    if ((<Dir> entry).expanded && entry.type === 'object') {
-      this.hide(<Dir>entry);
+    if (entry.expanded && entry.type === 'object') {
+      this.hide(entry);
     }
 
     let index = this.tableContent.indexOf(entry);
     this.tableContent.splice(index, 1);
-    const parent = this.getParent(<Dir>this.root, entry);
-
+    const parent = this.getParent(this.root, entry);
 
 
     if (!parent) {
       return;
     }
-    index = parent.members.indexOf(entry);
-    parent.members.splice(index, 1);
+    index = parent.value.children.indexOf(entry);
+    parent.value.children.splice(index, 1);
 
     // the last member is selected (if user clicks the last element)
-    if (index === parent.members.length && index > 0) {
-      this.select(parent.members[index - 1]);
+    if (index === parent.value.children.length && index > 0) {
+      this.select(parent.value.children[index - 1]);
     } else {
-      // otherwise, the element that took the delete def's place
-      this.select(parent.members[index]);
+      // otherwise, the children that took the delete def's place
+      this.select(parent.value.children[index]);
     }
     if (parent.type === 'object') {
       // if there are no more children. Visually signify it is hidden.
-      if (parent.members.length === 0) {
+      if (parent.value.children.length === 0) {
         parent.expanded = false;
       }
     }
@@ -206,12 +205,12 @@ export class DefsComponent implements OnInit {
 
 
 
-  private getParent(node: Dir, searched: Entry): Dir {
-    for (const entry of node.members) {
+  private getParent(parent: Entry, searched: Entry): Entry {
+    for (const entry of parent.value.children) {
       if (entry === searched) {
-        return node;
+        return parent;
       } else if (entry.type === 'object') {
-        const result = this.getParent(<Dir>entry, searched);
+        const result = this.getParent(entry, searched);
         if (result) {
           return result;
         }
@@ -221,19 +220,26 @@ export class DefsComponent implements OnInit {
     return undefined;
   }
 
-  public create(entry: Dir): void {
+  public create(entry: Entry): void {
     // hide it so it can refresh
     if (entry.expanded) {
       this.toggle(entry);
     }
-    let member = new Member('member',  // type
-                              'raw', // refType
-                              'undefined',  // name
-                              '', // parent
-                              {pattern: '', from: {type: '', values: []}}, // compiled
-                              entry.layer + 1); // layer
-    const index = entry.members.push(member);
-    this.select(member);
+    const member = new Member('undefined',
+                              ' ',
+                              {type: '2', values: []},
+                              {
+                                type : 'static',
+                                name : 'undefined'
+                              });
+    const aEntry = {
+      type : 'member',
+      name : 'undefined',
+      layer: entry.layer + 1,
+      value : member
+    };
+    const index = entry.value.children.push(aEntry);
+    this.select(aEntry);
 
     if (!entry.expanded) {
       this.toggle(entry);

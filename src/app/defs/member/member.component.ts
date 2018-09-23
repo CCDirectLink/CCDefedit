@@ -1,4 +1,4 @@
-import { Member } from '../../member.model';
+import { Entry } from '../../entry.model';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
@@ -7,7 +7,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
   styleUrls: ['./member.component.css']
 })
 export class MemberComponent implements OnInit {
-  @Input() entry: Member;
+  @Input() entry: Entry;
   @Output() deleteEntry = new EventEmitter();
   constructor() { }
 

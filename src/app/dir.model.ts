@@ -1,12 +1,25 @@
-import { Member } from './member.model';
-import { Entry } from './entry.model';
+import { Entry, cloneEntry} from './entry.model';
 
-export class Dir implements Entry {
+export class Dir {
   constructor(
       public type: string,
       public name: string,
-      public members: Entry[],
-      public layer: number = 0,
-      public expanded: boolean = false
+      public children: Entry[] = []
   ) { }
+
+  clone(): Dir {
+    const newChildren = this.children.map((e) => {
+        const newChild = cloneEntry(e);
+        return newChild;
+    });
+    console.log('Cloning Dir', this);
+    return new Dir(this.type,
+                   this.name,
+                   newChildren);
+  }
+
+  clear(): void {
+    this.children.forEach((e) => e.value.clear());
+    this.children = [];
+  }
 }

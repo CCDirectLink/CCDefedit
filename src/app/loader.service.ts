@@ -1,5 +1,12 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { Entry } from './entry.model';
+import {
+  ConvertFromOldDefJson,
+  Entry,
+  CreateEntry,
+  ConvertEntryToDefJson,
+  cloneEntry
+} from './entry.model';
+import { Dir} from './dir.model';
 import { Observable } from 'rxjs/Observable';
 
 const BLACKLIST = ['layer', 'expanded', 'prettyName'];
@@ -44,15 +51,22 @@ export class LoaderService {
     this.definitionNode = {
       type : 'object',
       name : 'cc',
-      members : [],
-      layer: 0
+      layer : 0,
+      expanded : false,
+      value : new Dir('object', 'cc')
     };
     this.definition.emit(this.definitionNode);
   }
   public openDefinition(): void {
     this.openFileDialouge((ev) =>
       this.readFile(ev.target.files[0], (data: string) => {
-        this.definitionNode = JSON.parse(data);
+        let definitionFile = JSON.parse(data);
+        if (definitionFile.members) {
+          console.log('Old file', definitionFile);
+          definitionFile = ConvertFromOldDefJson(definitionFile);
+          console.log('New file', definitionFile);
+        }
+        this.definitionNode = CreateEntry(definitionFile.tree, definitionFile.entries);
         this.definition.emit(this.definitionNode);
       }),
       '.db');
@@ -68,12 +82,16 @@ export class LoaderService {
   }
 
   public save(): void {
-    const content = JSON.stringify(this.definitionNode, (key, value) => BLACKLIST.indexOf(key) < 0 ? value : undefined, 4);
-
+    // const content = JSON.stringify(this.definitionNode, (key, value) => BLACKLIST.indexOf(key) < 0 ? value : undefined, 4);
+    let output = <any>{};
+    const clone = cloneEntry(this.definitionNode);
+    ConvertEntryToDefJson(clone, output);
+    console.log(output);
+    output = JSON.stringify(output);
     if (this.fs && this.fs.writeFileSync) {
-      this.saveFile(this.definitionName, content);
+      this.saveFile(this.definitionName, output);
     } else {
-      this.downloadFile(this.definitionName, content);
+      this.downloadFile(this.definitionName, output);
     }
   }
 
@@ -84,14 +102,12 @@ export class LoaderService {
 
     const a = document.createElement('a');
     a.href = url;
-	console.log(url, name);
     a.download = name;
     a.click();
     window.URL.revokeObjectURL(url);
   }
 
   private saveFile(name: string, content: string): void {
-    console.log(content);
     this.fs.writeFileSync(name, content);
   }
 }

@@ -1,6 +1,6 @@
 import { Member } from '../member.model';
 import { Dir } from '../dir.model';
-import { Entry } from '../entry.model';
+import { Entry, cloneEntry } from '../entry.model';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { LoaderService } from '../loader.service';
 
@@ -33,14 +33,14 @@ export class DefsComponent implements OnInit {
     const shift = e.shiftKey;
 
     if (shift) {
-      if (key === 67) {
+      if (key === 67) {// Key C
         this.copyied = this.selected;
         this.deleteSource = false;
       }
-      if (key === 88) {
+      if (key === 88) { // Key X
         this.copyied = this.selected;
         this.deleteSource = true;
-      } else if (key === 86) {
+      } else if (key === 86) { // V
         let parent: Entry;
 
         if (this.selected.type === 'object') {
@@ -58,7 +58,7 @@ export class DefsComponent implements OnInit {
 
         }
 
-        const copy: Entry = JSON.parse(JSON.stringify(this.copyied));
+        const copy: Entry = cloneEntry(this.copyied);
 
         if (this.deleteSource) {
           this.delete(this.copyied);
@@ -178,6 +178,7 @@ export class DefsComponent implements OnInit {
     }
 
     let index = this.tableContent.indexOf(entry);
+    entry.value.clear();
     this.tableContent.splice(index, 1);
     const parent = this.getParent(this.root, entry);
 

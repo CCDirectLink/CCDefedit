@@ -12,7 +12,6 @@ export interface Entry {
 }
 
 export function cloneEntry(oldEntry) {
-  console.log(oldEntry);
   return {type : oldEntry.type,
           name: oldEntry.name,
           layer: oldEntry.layer,
@@ -20,78 +19,77 @@ export function cloneEntry(oldEntry) {
           expanded : oldEntry.expanded
   };
 }
-function search(result, node, parent) {
-  switch (node.type) {
-    case 'object': {
-      const childNode = {
-        type: 'object',
-        name: node.name,
-        children: []
-      };
-      parent.children.push(childNode);
-      for (const child of node.members) {
-        search(result, child, childNode);
-      }
+export function ConvertFromOldDefJson(def) {
+  const tree = {};
+  const entries = [];
+  initObject(tree);
+
+  convert(tree, entries, def);
+  return {tree, entries};
+}
+
+
+function initObject(obj) {
+  obj.type = '';
+  obj.name = '';
+  obj.children = [];
+}
+
+function convert(tree, entries, def, layer = 0) {
+  if (def.type === 'object') {
+    // this is broken
+    let obj = <any>{};
+    if (layer === 0) {
+      obj = tree;
     }
-    break;
-    case 'member': {
-      switch (node.refType) {
-        case 'var': {
-          const childNode = {
-            type: 'static',
-            name: node.name,
-            parent: node.parent
-          };
-          parent.children.push(childNode);
-          addEntry(result, node);
-        }
-        break;
-        case 'raw': {
-          const childNode = {
-            type: 'raw',
-            name: node.name
-          };
-          parent.children.push(childNode);
-          addEntry(result, node);
-        }
-        break;
-        case 'ref': {
-          const childNode = {
-            type: 'dynamic',
-            name: node.name,
-            parent: node.parent
-          };
-          parent.children.push(childNode);
-          addEntry(result, node);
-        }
-        break;
-      }
+    initObject(obj);
+
+    obj.type = def.type;
+    obj.name = def.name;
+
+    for (const child of def.members) {
+      convert(obj, entries, child, layer + 1);
     }
-    break;
+    if (layer > 0) {
+      tree.children.push(obj);
+    }
+
+  } else if (def.type === 'member') {
+
+    const entryObject = <any>{};
+    entryObject.name = def.name;
+    for (const key of Object.keys(def.compiled)) {
+      entryObject[key] = def.compiled[key];
+    }
+
+    entries.push(entryObject);
+
+    const memberObject = <any>{};
+
+    const typeChoices = [{
+      old : 'raw',
+      'new' :  'raw'
+    }, {
+      old : 'var',
+      'new' : 'static',
+      'parent' : true
+    }, {
+      old : 'ref',
+      'new' : 'dynamic',
+      'parent' : true
+    }];
+
+    const defConfig = typeChoices.filter((type) => type.old === def.refType).pop();
+    memberObject.name = def.name;
+    memberObject.type = defConfig['new'];
+    if (defConfig['parent'] && def['parent']) {
+      memberObject.parent = def['parent'];
+    }
+
+    tree.children.push(memberObject);
   }
-}
-function addEntry(result, node) {
-  result.entries.push({
-    type: 'select',
-    name: node.name,
-    pattern: node.compiled.pattern,
-    from: node.compiled.from
-  });
-}
-export function ConvertFromOldDefJson(old) {
-  const result = {
-    entries: [],
-    tree: {
-      type: 'object',
-      name: old.name,
-      children: []
-    }
-  };
-  for (const child of old.members) {
-    search(result, child, result.tree);
-  }
-  return result;
-}
+ }
+
 export function ConvertEntryToDefJson(tree: any, output: any = {}, layer: number = 0) {
   if (layer === 0) {
     output.tree = {};

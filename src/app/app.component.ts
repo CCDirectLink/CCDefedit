@@ -10,7 +10,7 @@ export class AppComponent {
   selected: Entry;
   root: Entry;
   saveEnabled = false;
-
+  showCompact = false;
   public select(entry: Entry): void {
     this.selected = entry;
   }

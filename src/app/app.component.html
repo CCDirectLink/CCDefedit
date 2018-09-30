@@ -7,7 +7,18 @@
     </div>
     <div class="col-md">
       <app-editor [entry]="selected" [root]="root"></app-editor>
-      <app-walker class="row-padding"></app-walker>
+
+      <div class="row">
+        <div class="col-12">
+          <input class="row-padding" type="checkbox" [(ngModel)]="showCompact" />
+        </div>
+        <div class="col-12">
+          <app-walker-compat class="row-padding" *ngIf="showCompact"></app-walker-compat>
+        </div>
+        <div class="col-12">
+          <app-walker class="row-padding"></app-walker>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -11,7 +11,8 @@ import { LoaderService } from './loader.service';
 import { EditorComponent } from './editor/editor.component';
 import { WalkerComponent } from './walker/walker.component';
 import { WalkerService } from './walker/walker.service';
-
+import { WalkerCompatComponent } from './walker-compat/walker-compat.component';
+import { WalkerCompatService } from './walker-compat/walker-compat.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,13 +21,14 @@ import { WalkerService } from './walker/walker.service';
     DirComponent,
     MemberComponent,
     EditorComponent,
-    WalkerComponent
+    WalkerComponent,
+    WalkerCompatComponent
   ],
   imports: [
     BrowserModule,
     FormsModule
   ],
-  providers: [LoaderService, WalkerService],
+  providers: [LoaderService, WalkerService, WalkerCompatService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

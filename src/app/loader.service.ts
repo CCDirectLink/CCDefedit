@@ -4,7 +4,8 @@ import {
   Entry,
   CreateEntry,
   ConvertEntryToDefJson,
-  cloneEntry
+  cloneEntry,
+  MergeEntries
 } from './entry.model';
 import { Dir} from './dir.model';
 import { Observable } from 'rxjs/Observable';
@@ -57,16 +58,30 @@ export class LoaderService {
     };
     this.definition.emit(this.definitionNode);
   }
+  public loadDefinition(data): any {
+    let definitionFile = JSON.parse(data);
+
+    if (definitionFile.members) {
+      console.log('Old file', definitionFile);
+      definitionFile = ConvertFromOldDefJson(definitionFile);
+      console.log('New file', definitionFile);
+    }
+    return CreateEntry(definitionFile.tree, definitionFile.entries);
+  }
+  public mergeDefinitions(): void {
+    this.openFileDialouge((ev) =>
+      this.readFile(ev.target.files[0], (data: string) => {
+        const inDefNode = this.loadDefinition(data);
+        const oldDefNode = this.definitionNode;
+        // MergeEntries(oldDefNode, inDefNode);
+        // this.definition.emit(this.definitionNode);
+      }),
+      '.db');
+  }
   public openDefinition(): void {
     this.openFileDialouge((ev) =>
       this.readFile(ev.target.files[0], (data: string) => {
-        let definitionFile = JSON.parse(data);
-        if (definitionFile.members) {
-          console.log('Old file', definitionFile);
-          definitionFile = ConvertFromOldDefJson(definitionFile);
-          console.log('New file', definitionFile);
-        }
-        this.definitionNode = CreateEntry(definitionFile.tree, definitionFile.entries);
+        this.definitionNode = this.loadDefinition(data);
         this.definition.emit(this.definitionNode);
       }),
       '.db');

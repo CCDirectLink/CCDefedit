@@ -23,7 +23,10 @@ export class NavbarComponent implements OnInit {
   public openDefinition() {
     this.loader.openDefinition();
   }
-
+  public mergeDefinitions() {
+    // this.loader.openFileDialouge()
+    // this.loader.loadDefinition();
+  }
   public openCode() {
     this.loader.openCode();
   }

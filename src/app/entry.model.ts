@@ -11,6 +11,10 @@ export interface Entry {
     expanded?: any;
 }
 
+export function MergeEntries() {
+  
+}
+
 export function cloneEntry(oldEntry) {
   return {type : oldEntry.type,
           name: oldEntry.name,

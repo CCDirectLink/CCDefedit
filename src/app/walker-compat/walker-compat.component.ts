@@ -20,7 +20,6 @@ export class WalkerCompatComponent implements OnInit , OnDestroy {
     this.rawStringCode = code;
   }
   onLoadClick() {
-    console.log('We clicked!');
     this.service.code.emit(this.rawStringCode);
   }
   ngOnDestroy() {

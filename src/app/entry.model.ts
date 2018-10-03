@@ -12,7 +12,7 @@ export interface Entry {
 }
 
 export function MergeEntries() {
-  
+   function a() {}
 }
 
 export function cloneEntry(oldEntry) {
@@ -39,6 +39,13 @@ function initObject(obj) {
   obj.children = [];
 }
 
+export function convert2(entries) {
+  const newEntries = {};
+  for (const entry of entries) {
+    newEntries[entry.name] = entry;
+  }
+  return newEntries;
+}
 function convert(tree, entries, def, layer = 0) {
   if (def.type === 'object') {
     // this is broken
@@ -97,7 +104,7 @@ function convert(tree, entries, def, layer = 0) {
 export function ConvertEntryToDefJson(tree: any, output: any = {}, layer: number = 0) {
   if (layer === 0) {
     output.tree = {};
-    output.entries = [];
+    output.entries = {};
   }
   if (tree.type === 'object') {
     const value = tree.value;
@@ -107,22 +114,22 @@ export function ConvertEntryToDefJson(tree: any, output: any = {}, layer: number
     output.tree.children = value.children
                                 .map((e) => {
                                   const obj = {
-                                    entries: [],
+                                    entries: {},
                                     tree : {},
                                   };
                                   ConvertEntryToDefJson(e, obj, layer + 1);
-                                  ([]).push.apply(output.entries, obj.entries);
+                                  Object.assign(output.entries,  obj.entries);
                                   return obj.tree;
                                 });
   } else if (tree.type === 'member') {
     const value = tree.value;
     output.tree = value.leaf;
     delete value.leaf;
-    output.entries.push(value);
+    output.entries[value.name]  = value;
   }
     console.log('Tree', tree.value , 'Out tree', output.tree);
 }
-export function CreateEntry(tree = <any>{}, entries = <any>[], layer: number = 0) {
+export function CreateEntry(tree = <any>{}, entries = <any>{}, layer: number = 0) {
   const mainEntry = <Entry>{
     name : tree.name,
     layer
@@ -136,7 +143,7 @@ export function CreateEntry(tree = <any>{}, entries = <any>[], layer: number = 0
                         children);
     mainEntry.value = dir;
   } else {
-    const entry = findEntryByName(tree.name, entries);
+    const entry = entries[tree.name];
     if (entry) {
       mainEntry.type = 'member';
       const leaf = <Leaf> {
@@ -152,12 +159,4 @@ export function CreateEntry(tree = <any>{}, entries = <any>[], layer: number = 0
     }
   }
   return mainEntry;
-}
-
-function findEntryByName(name, entriesArr) {
-  for (const entry of entriesArr) {
-    if (entry.name === name) {
-      return entry;
-    }
-  }
 }

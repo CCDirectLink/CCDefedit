@@ -5,7 +5,8 @@ import {
   CreateEntry,
   ConvertEntryToDefJson,
   cloneEntry,
-  MergeEntries
+  MergeEntries,
+  convert2
 } from './entry.model';
 import { Dir} from './dir.model';
 import { Observable } from 'rxjs/Observable';
@@ -61,10 +62,19 @@ export class LoaderService {
   public loadDefinition(data): any {
     let definitionFile = JSON.parse(data);
 
+    // convert to v2
     if (definitionFile.members) {
+      console.clear();
+      console.log('v1 -> v2');
       console.log('Old file', definitionFile);
       definitionFile = ConvertFromOldDefJson(definitionFile);
       console.log('New file', definitionFile);
+    }
+    // convert to v3
+    if (Array.isArray(definitionFile.entries)) {
+      console.log('v2 -> v3');
+      definitionFile.entries = convert2(definitionFile.entries);
+      console.log(definitionFile);
     }
     return CreateEntry(definitionFile.tree, definitionFile.entries);
   }

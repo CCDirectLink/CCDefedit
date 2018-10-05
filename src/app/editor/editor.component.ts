@@ -42,7 +42,6 @@ export class EditorComponent implements OnInit {
         parent : ''
       };
       this.entry.value = new Member(type,
-                                    oldEntry.name,
                                     {type : '', values: []},
                                     leaf);
      console.log('Is member', this.entry.value);

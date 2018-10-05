@@ -12,7 +12,6 @@ export class Dir {
         const newChild = cloneEntry(e);
         return newChild;
     });
-    console.log('Cloning Dir', this);
     return new Dir(this.type,
                    this.name,
                    newChildren);

@@ -226,12 +226,10 @@ export class DefsComponent implements OnInit {
     if (entry.expanded) {
       this.toggle(entry);
     }
-    const member = new Member('undefined',
-                              ' ',
+    const member = new Member(' ',
                               {type: '2', values: []},
                               {
                                 type : 'static',
-                                name : 'undefined'
                               });
     const aEntry = {
       type : 'member',

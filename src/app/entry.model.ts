@@ -118,16 +118,17 @@ export function ConvertEntryToDefJson(tree: any, output: any = {}, layer: number
                                     tree : {},
                                   };
                                   ConvertEntryToDefJson(e, obj, layer + 1);
-                                  Object.assign(output.entries,  obj.entries);
+                                  console.log(obj.entries);
+                                  Object.assign(output.entries, obj.entries);
                                   return obj.tree;
                                 });
   } else if (tree.type === 'member') {
     const value = tree.value;
+    output.entries[tree.name]  = value;
     output.tree = value.leaf;
     delete value.leaf;
-    output.entries[value.name]  = value;
   }
-    console.log('Tree', tree.value , 'Out tree', output.tree);
+
 }
 export function CreateEntry(tree = <any>{}, entries = <any>{}, layer: number = 0) {
   const mainEntry = <Entry>{
@@ -151,8 +152,7 @@ export function CreateEntry(tree = <any>{}, entries = <any>{}, layer: number = 0
         name : tree.name,
         parent : tree.parent
       };
-      const member = new Member(entry.name,
-                                entry.pattern,
+      const member = new Member(entry.pattern,
                                 entry.from,
                                 leaf);
       mainEntry.value = member;

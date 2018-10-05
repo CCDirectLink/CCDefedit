@@ -2,8 +2,7 @@ import {Entry} from './entry.model';
 import {Leaf} from './leaf.model';
 export class Member {
     constructor(
-        public name: string,
-        public pattern: string,
+        public type: string,
         public from: {
           type: string,
           values: any[]
@@ -13,9 +12,7 @@ export class Member {
     clone(): Member {
         const newLeaf = JSON.parse(JSON.stringify(this.leaf));
         const newFrom = JSON.parse(JSON.stringify(this.from));
-        console.log('Cloning member', this);
-        return new Member(this.name,
-                          this.pattern,
+        return new Member(this.type,
                           newFrom,
                           newLeaf);
     }

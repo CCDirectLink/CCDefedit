@@ -111,7 +111,13 @@ export class LoaderService {
     let output = <any>{};
     const clone = cloneEntry(this.definitionNode);
     ConvertEntryToDefJson(clone, output);
-    console.log(output);
+    const entries = Object.keys(output.entries)
+                   .sort()
+                   .reduce((obj, value, index, arr) => {
+                     obj[value] = output.entries[value];
+                     return obj;
+                   }, {});
+    output.entries = entries;
     output = JSON.stringify(output);
     if (this.fs && this.fs.writeFileSync) {
       this.saveFile(this.definitionName, output);

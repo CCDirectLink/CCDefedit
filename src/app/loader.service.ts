@@ -118,7 +118,7 @@ export class LoaderService {
                      return obj;
                    }, {});
     output.entries = entries;
-    output = JSON.stringify(output);
+    output = JSON.stringify(output, undefined, 4);
     if (this.fs && this.fs.writeFileSync) {
       this.saveFile(this.definitionName, output);
     } else {

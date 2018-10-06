@@ -1,8 +1,9 @@
-import { Leaf } from '../leaf.model';
+import Leaf from '../leaf.model';
+import MemberEntry from '../member.entry.model';
 import { Dir } from '../dir.model';
 import { EventEmitter, Output, Component, OnInit, Input } from '@angular/core';
 import { Entry } from '../entry.model';
-import { Member } from '../member.model';
+import Member from '../member.model';
 
 @Component({
   selector: 'app-editor',
@@ -34,17 +35,22 @@ export class EditorComponent implements OnInit {
     delete this.entry.value;
 
     const type = this.entry.type = event.target.value;
-    console.log(event);
     if (type === 'member') {
+      const memEntry = <MemberEntry> {
+        type : 'select',
+        pattern : '',
+        from : <any>{
+          type: '',
+          values: []
+        }
+      };
       const leaf = <Leaf> {
         type : 'static',
         name : oldEntry.name,
         parent : ''
       };
-      this.entry.value = new Member(type,
-                                    {type : '', values: []},
+      this.entry.value = new Member(memEntry,
                                     leaf);
-     console.log('Is member', this.entry.value);
     } else if (type === 'object') {
       this.entry.value = new Dir(type,
                                  oldEntry.name);
@@ -81,10 +87,10 @@ export class EditorComponent implements OnInit {
   }
 }
   public remove(i: number): void {
-    (<Member>this.entry.value).from.values.splice(i, 1);
+    (<Member>this.entry.value).entry.from.values.splice(i, 1);
   }
 
   public add(): void {
-    (<Member>this.entry.value).from.values.push({name: '', value: ''});
+    (<Member>this.entry.value).entry.from.values.push({name: '', value: ''});
   }
 }

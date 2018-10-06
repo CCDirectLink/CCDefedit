@@ -1,6 +1,7 @@
-import { Leaf } from './leaf.model';
+import Leaf from './leaf.model';
+import MemberEntry from './member.entry.model';
 import { Dir } from './dir.model';
-import { Member } from './member.model';
+import Member from './member.model';
 
 export interface Entry {
     type: string;
@@ -124,7 +125,7 @@ export function ConvertEntryToDefJson(tree: any, output: any = {}, layer: number
                                 });
   } else if (tree.type === 'member') {
     const value = tree.value;
-    output.entries[tree.name]  = value;
+    output.entries[tree.name]  = value.entry;
     output.tree = value.leaf;
     delete value.leaf;
   }
@@ -144,16 +145,16 @@ export function CreateEntry(tree = <any>{}, entries = <any>{}, layer: number = 0
                         children);
     mainEntry.value = dir;
   } else {
-    const entry = entries[tree.name];
+    const entry = <MemberEntry>entries[tree.name];
     if (entry) {
       mainEntry.type = 'member';
+
       const leaf = <Leaf> {
         type : tree.type,
         name : tree.name,
         parent : tree.parent
       };
-      const member = new Member(entry.pattern,
-                                entry.from,
+      const member = new Member(entry,
                                 leaf);
       mainEntry.value = member;
     }

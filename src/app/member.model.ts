@@ -1,23 +1,21 @@
 import {Entry} from './entry.model';
-import {Leaf} from './leaf.model';
-export class Member {
+import Leaf from './leaf.model';
+import MemberEntry from './member.entry.model';
+
+
+export default class Member {
     constructor(
-        public type: string,
-        public from: {
-          type: string,
-          values: any[]
-        },
+        public entry: MemberEntry,
         public leaf: Leaf
     ) { }
     clone(): Member {
+        const newMemberEntry = JSON.parse(JSON.stringify(this.entry));
         const newLeaf = JSON.parse(JSON.stringify(this.leaf));
-        const newFrom = JSON.parse(JSON.stringify(this.from));
-        return new Member(this.type,
-                          newFrom,
+        return new Member(newMemberEntry,
                           newLeaf);
     }
     clear(): void {
-      this.from.values = [];
-      this.from = {type : '', values: []};
+      this.entry = <MemberEntry>{};
+      this.leaf = <Leaf>{};
     }
 }

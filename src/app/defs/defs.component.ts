@@ -1,4 +1,6 @@
-import { Member } from '../member.model';
+import Member from '../member.model';
+import MemberEntry from '../member.entry.model';
+import Leaf from '../leaf.model';
 import { Dir } from '../dir.model';
 import { Entry, cloneEntry } from '../entry.model';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
@@ -226,10 +228,17 @@ export class DefsComponent implements OnInit {
     if (entry.expanded) {
       this.toggle(entry);
     }
-    const member = new Member(' ',
-                              {type: '2', values: []},
-                              {
-                                type : 'static',
+    const memEntry = <MemberEntry> {
+      type : 'select',
+      pattern : '',
+      from : <any>{
+        type: '',
+        values: []
+      }
+    };
+    const member = new Member(memEntry,
+                              <Leaf> {
+                                type : 'static'
                               });
     const aEntry = {
       type : 'member',

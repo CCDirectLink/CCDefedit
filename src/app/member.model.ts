@@ -1,4 +1,3 @@
-import {Entry} from './entry.model';
 import Leaf from './leaf.model';
 import MemberEntry from './member.entry.model';
 

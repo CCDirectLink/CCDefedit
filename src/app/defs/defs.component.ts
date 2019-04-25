@@ -242,7 +242,7 @@ export class DefsComponent implements OnInit {
                               });
     const aEntry = {
       type : 'member',
-      name : 'undefined',
+      name : '',
       layer: entry.layer + 1,
       value : member
     };
